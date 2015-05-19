@@ -34,7 +34,12 @@
                     </div>
                 </div>
                 <h4 class="mb">Attachment</h4>
-                <button class="btn btn-theme03" type="button">Get From File Manager</button>
+                <a href="<?php echo base_url('filemanager/dialog.php?type=2&field_id=attachment'); ?>" class="btn btn-theme03" id="iframe-btn">Get From File Manager</a>
+                <div class="alert alert-info col-sm-6" style="display: none">
+                    <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+                    <i class="fa fa-file"></i> <span>test</span>
+                </div>
+                <input type="hidden" id="attachment" name="attachment"/>
             </div>
             <div class="col-lg-3">
                 <h4 class="mb">Featured Image</h4>

@@ -20,6 +20,7 @@
     <!-- Custom styles for this template -->
     <link href="<?php echo base_url('assets/css/style.css'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/style-responsive.css'); ?>" rel="stylesheet">
+    <link href="<?php echo base_url('fancybox/jquery.fancybox-1.3.4.css'); ?>" rel="stylesheet" media="screen">
 
 
 
@@ -106,6 +107,7 @@ MAIN CONTENT
 <script src="<?php echo base_url('assets/js/jquery.scrollTo.min.js'); ?>"></script>
 <script src="<?php echo base_url('assets/js/jquery.nicescroll.js'); ?>" type="text/javascript"></script>
 <script src="<?php echo base_url('assets/js/jquery.sparkline.js'); ?>"></script>
+<script src="<?php echo base_url('fancybox/jquery.fancybox-1.3.4.pack.js'); ?>"></script>
 
 
 <!--common script for all pages-->
@@ -125,14 +127,18 @@ MAIN CONTENT
             menubar : false,
             plugins: [
                 "code advlist autolink link image lists charmap preview hr anchor pagebreak",
-                "searchreplace wordcount visualblocks visualchars insertdatetime media nonbreaking fullscreen",
-                "table contextmenu directionality emoticons paste textcolor"
+                "searchreplace visualblocks visualchars insertdatetime nonbreaking fullscreen",
             ],
 
             toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
             relative_urls : false,
-            image_advtab: true,
             browser_spellcheck : true
+        });
+        $('#iframe-btn').fancybox({
+            'width'		: 900,
+            'height'	: 600,
+            'type'		: 'iframe',
+            'autoScale'    	: false
         });
     });
     function toggleExcerpt()

@@ -20,11 +20,11 @@ if($_SESSION["verify"] != "RESPONSIVEfilemanager") die('forbidden');
 //    |   |   |   |- responsivefilemanager
 //    |   |   |   |   |- plugin.min.js
 
-$root = rtrim($_SERVER['DOCUMENT_ROOT'],'/'); // don't touch this parameter
+$root = dirname(dirname(dirname(__FILE__))); // don't touch this parameter
 $base_url = '';  // base url of site (without final /). If you prefer relative urls leave empty
-$folder_host = '/ipkcenter'; // folder di hosting. Cotoh alamat web 'http://localhost/iit' maka $folder_host = '/ipkcenter',
+$folder_host = '/si-hmif'; // folder di hosting. Cotoh alamat web 'http://localhost/iit' maka $folder_host = '/iit',
 //jika web terletak di root. contoh di http://localhost kosongkan menjadi $folder_host = ''
-$upload_dir = $folder_host.'/source/'; // path from base_url to base of upload folder (with start and final /)
+$upload_dir = '/source/'; // path from base_url to base of upload folder (with start and final /)
 $current_path = '../source/'; // relative path from filemanager folder to upload folder (with final /)
 
 //thumbs folder can't put inside upload folder

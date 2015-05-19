@@ -10,8 +10,7 @@ class Ajax extends CI_Controller
 {
     function index()
     {
-        $query = $this->db->get('user');
-        var_dump($query);
+        echo dirname(__FILE__);
     }
 
     function login()

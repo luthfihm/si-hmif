@@ -87,6 +87,16 @@ MAIN CONTENT
 
 <!--main content end-->
 
+<!--footer start-->
+<footer class="site-footer">
+    <div class="text-center">
+        <?php echo date('Y'); ?> - Sistem Informasi HMIF ITB.
+        <a href="#" class="go-top">
+            <i class="fa fa-angle-up"></i>
+        </a>
+    </div>
+</footer>
+<!--footer end-->
 
 <!-- js placed at the end of the document so the pages load faster -->
 <script src="<?php echo base_url('assets/js/jquery.js'); ?>"></script>

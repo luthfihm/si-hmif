@@ -21,6 +21,13 @@
     <link href="<?php echo base_url('assets/css/style.css'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/style-responsive.css'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('fancybox/jquery.fancybox-1.3.4.css'); ?>" rel="stylesheet" media="screen">
+    <link href="<?php echo base_url('jquery-ui/jquery-ui.min.css'); ?>" rel="stylesheet">
+    <link href="<?php echo base_url('datetimepicker/jquery.timepicker.css'); ?>" rel="stylesheet">
+    <link href="<?php echo base_url('datetimepicker/lib/bootstrap-datepicker.css'); ?>" rel="stylesheet">
+
+
+    <!-- Include one of jTable styles. -->
+    <link href="<?php echo base_url('jtable/themes/metro/darkgray/jtable.min.css'); ?>" rel="stylesheet" type="text/css" />
 
 
 
@@ -55,9 +62,9 @@ MAIN SIDEBAR MENU
             </li>
 
             <li class="mt">
-                <a class="<?php if ($content=='post') echo 'active'; ?>" href="<?php echo base_url('admin/post'); ?>">
-                    <i class="fa fa-archive"></i>
-                    <span>Post</span>
+                <a class="<?php if ($content=='post' || $content=='list_post') echo 'active'; ?>" href="<?php echo base_url('admin/post'); ?>">
+                    <i class="fa fa-file-text"></i>
+                    <span>View Posts</span>
                 </a>
             </li>
 
@@ -108,6 +115,10 @@ MAIN CONTENT
 <script src="<?php echo base_url('assets/js/jquery.nicescroll.js'); ?>" type="text/javascript"></script>
 <script src="<?php echo base_url('assets/js/jquery.sparkline.js'); ?>"></script>
 <script src="<?php echo base_url('fancybox/jquery.fancybox-1.3.4.pack.js'); ?>"></script>
+<script src="<?php echo base_url('jquery-ui/jquery-ui.min.js'); ?>"></script>
+<script src="<?php echo base_url('datetimepicker/lib/bootstrap-datepicker.js'); ?>"></script>
+<script src="<?php echo base_url('datetimepicker/jquery.timepicker.js'); ?>"></script>
+<script src="<?php echo base_url('datetimepicker/dist/jquery.datepair.js'); ?>"></script>
 
 
 <!--common script for all pages-->
@@ -119,8 +130,13 @@ MAIN CONTENT
 <!-- TinyMCE -->
 <script src="<?php echo base_url('tinymce/jquery.tinymce.min.js'); ?>"></script>
 <script src="<?php echo base_url('tinymce/tinymce.min.js'); ?>"></script>
+
+<!-- Include jTable script file. -->
+<script src="<?php echo base_url('jtable/jquery.jtable.js'); ?>" type="text/javascript"></script>
+
 <?php if ($content == 'new_post'){ ?>
 <script type="text/javascript">
+    var post_type = "";
     $(document).ready(function () {
         $('.tinymce').tinymce({
             theme : "modern",
@@ -134,11 +150,58 @@ MAIN CONTENT
             relative_urls : false,
             browser_spellcheck : true
         });
-        $('#iframe-btn').fancybox({
+        $('.iframe-btn').fancybox({
             'width'		: 900,
             'height'	: 600,
             'type'		: 'iframe',
             'autoScale'    	: false
+        });
+        $('#date').datepicker({
+            'format': 'yyyy-mm-dd',
+            'autoclose': true
+        });
+        $('#start_time').timepicker({ 'timeFormat': 'H:i' });
+        $("#post-form").submit(function () {
+            if (post_type == "0" || post_type == "1")
+            {
+                $.ajax({
+                    url : "<?php echo base_url('ajax/new_post'); ?>",
+                    type : "post",
+                    data : {
+                        title : $("#title").val(),
+                        content : $("#content").val(),
+                        excerpt : $("#excerpt").val(),
+                        attachment : $("#attachment").val(),
+                        featured_image : $("#featured_image").val(),
+                        category : $("#category").val(),
+                        date : $("#date").val(),
+                        start_time : $("#start_time").val(),
+                        end_time : $("#end_time").val(),
+                        location : $("#location").val(),
+                        contact_name : $("#contact_name").val(),
+                        contact: $("#contact").val(),
+                        published : post_type
+                    },
+                    success : function (html) {
+                        if (html == "true"){
+                            window.location = "<?php echo base_url('admin/post'); ?>";
+                        }else{
+                            alert("Gagal");
+                            $("#form-button").show();
+                            $("#loading").hide();
+                        }
+                    },
+                    beforeSend : function () {
+                        $("#form-button").hide();
+                        $("#loading").show();
+                    },
+                    error : function () {
+                        alert("error");
+                    }
+                });
+            }
+            post_type = "";
+            return false;
         });
     });
     function toggleExcerpt()
@@ -150,10 +213,285 @@ MAIN CONTENT
         else
         {
             $("#excerpt-display").hide();
+            $("#excerpt").val("");
         }
+    }
+    function showAttach()
+    {
+        var loop = setInterval(function(){
+            var dir = $("#attachment").val();
+            if (dir != ""){
+                var arr_str = dir.split("/");
+                $("#attach_text").html(arr_str[arr_str.length-1]);
+                $("#attach_show").show();
+                $("#attach_button").hide();
+                clearInterval(loop);
+            }
+        },100);
+    }
+    function hideAttach()
+    {
+        $("#attach_show").hide();
+        $("#attach_button").show();
+        $("#attachment").val("");
+    }
+
+    function showImg()
+    {
+        var loop = setInterval(function(){
+            var dir = $("#featured_image").val();
+            if (dir != ""){
+                $("#img_show").attr("src","<?php echo base_url(); ?>"+dir);
+                clearInterval(loop);
+            }
+        },100);
+    }
+    function showEndTime()
+    {
+        var start_time = $('#start_time').val();
+        if (start_time != "")
+        {
+            $("#end_time").removeAttr("disabled");
+            $("#end_time").timepicker({
+                'timeFormat': 'H:i',
+                'minTime': start_time,
+                'maxTime': '23:30',
+                'showDuration': true
+            });
+        }
+    }
+    function saveDraft()
+    {
+        post_type = "0";
+        $("#post-form").submit();
+    }
+    function publish()
+    {
+        post_type = "1";
+        $("#post-form").submit();
     }
 </script>
 <?php } ?>
+<?php if ($content == 'edit_post'){ ?>
+    <script type="text/javascript">
+        var post_type = "";
+        $(document).ready(function () {
+            $('.tinymce').tinymce({
+                theme : "modern",
+                menubar : false,
+                plugins: [
+                    "code advlist autolink link image lists charmap preview hr anchor pagebreak",
+                    "searchreplace visualblocks visualchars insertdatetime nonbreaking fullscreen",
+                ],
 
+                toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
+                relative_urls : false,
+                browser_spellcheck : true
+            });
+            $('.iframe-btn').fancybox({
+                'width'		: 900,
+                'height'	: 600,
+                'type'		: 'iframe',
+                'autoScale'    	: false
+            });
+            $('#date').datepicker({
+                'format': 'yyyy-mm-dd',
+                'autoclose': true
+            });
+            $('#start_time').timepicker({ 'timeFormat': 'H:i' });
+            $("#post-form").submit(function () {
+                if (post_type == "0" || post_type == "1")
+                {
+                    $.ajax({
+                        url : "<?php echo base_url('ajax/edit_post'); ?>",
+                        type : "post",
+                        data : {
+                            id: "<?php echo $post->id; ?>",
+                            title : $("#title").val(),
+                            content : $("#content").val(),
+                            excerpt : $("#excerpt").val(),
+                            attachment : $("#attachment").val(),
+                            featured_image : $("#featured_image").val(),
+                            category : $("#category").val(),
+                            date : $("#date").val(),
+                            start_time : $("#start_time").val(),
+                            end_time : $("#end_time").val(),
+                            location : $("#location").val(),
+                            contact_name : $("#contact_name").val(),
+                            contact: $("#contact").val(),
+                            published : post_type
+                        },
+                        success : function (html) {
+                            if (html == "true"){
+                                window.location = "<?php echo base_url('admin/post'); ?>";
+                            }else{
+                                alert("Gagal");
+                                $("#form-button").show();
+                                $("#loading").hide();
+                            }
+                        },
+                        beforeSend : function () {
+                            $("#form-button").hide();
+                            $("#loading").show();
+                        },
+                        error : function () {
+                            alert("error");
+                        }
+                    });
+                }
+                post_type = "";
+                return false;
+            });
+            <?php if ($post->attachment!=""){ ?>
+            showAttach();
+            <?php } ?>
+        });
+        function toggleExcerpt()
+        {
+            if($('#custom').is(':checked'))
+            {
+                $("#excerpt-display").show();
+            }
+            else
+            {
+                $("#excerpt-display").hide();
+                $("#excerpt").val("");
+            }
+        }
+        function showAttach()
+        {
+            var loop = setInterval(function(){
+                var dir = $("#attachment").val();
+                if (dir != ""){
+                    var arr_str = dir.split("/");
+                    $("#attach_text").html(arr_str[arr_str.length-1]);
+                    $("#attach_show").show();
+                    $("#attach_button").hide();
+                    clearInterval(loop);
+                }
+            },100);
+        }
+        function hideAttach()
+        {
+            $("#attach_show").hide();
+            $("#attach_button").show();
+            $("#attachment").val("");
+        }
+
+        function showImg()
+        {
+            var loop = setInterval(function(){
+                var dir = $("#featured_image").val();
+                if (dir != ""){
+                    $("#img_show").attr("src","<?php echo base_url(); ?>"+dir);
+                    clearInterval(loop);
+                }
+            },100);
+        }
+        function showEndTime()
+        {
+            var start_time = $('#start_time').val();
+            if (start_time != "")
+            {
+                $("#end_time").removeAttr("disabled");
+                $("#end_time").timepicker({
+                    'timeFormat': 'H:i',
+                    'minTime': start_time,
+                    'maxTime': '23:30',
+                    'showDuration': true
+                });
+            }
+        }
+        function saveDraft()
+        {
+            post_type = "0";
+            $("#post-form").submit();
+        }
+        function publish()
+        {
+            post_type = "1";
+            $("#post-form").submit();
+        }
+    </script>
+<?php } ?>
+<?php if ($content == 'list_post'){ ?>
+<script>
+    $(document).ready(function () {
+        $("#list-post").jtable({
+            paging: true,
+            pageSize: 10,
+            actions: {
+                listAction: "<?php echo base_url('ajax/list_post'); ?>",
+                deleteAction: "<?php echo base_url('ajax/delete_post'); ?>"
+            },
+            fields: {
+                id: {
+                    key: true,
+                    list: false
+                },
+                Title: {
+                    title: "Title",
+                    width: "68%",
+                    display: function (data) {
+                        return "<a href='<?php echo base_url() ?>admin/post/"+data.record.id+"' >"+data.record.Title+"</a>";
+                    }
+                },
+                Status: {
+                    title: "Status",
+                    width: "10%"
+                },
+                Category: {
+                    title: "Category",
+                    width: "10%"
+                },
+                Date: {
+                    title: "Date",
+                    width: "10%"
+                },
+                Edit: {
+                    listClass: "jtable-command-column",
+                    width: "1%",
+                    display: function (data) {
+                        return "<button class='jtable-command-button jtable-edit-command-button' onclick='window.location=\"<?php echo base_url(); ?>admin/edit_post/"+data.record.id+"\"'></button>";
+                    }
+                }
+            }
+        });
+        $("#list-post").jtable('load');
+    });
+    var publish = null;
+    function getPublished()
+    {
+        publish = "1";
+        $("#all").css("font-weight","normal");
+        $("#published").css("font-weight","bolder");
+        $("#draft").css("font-weight","normal");
+        filterPost();
+    }
+    function getDraft()
+    {
+        publish = "0";
+        $("#all").css("font-weight","normal");
+        $("#published").css("font-weight","normal");
+        $("#draft").css("font-weight","bolder");
+        filterPost();
+    }
+    function getAll()
+    {
+        publish = null;
+        $("#all").css("font-weight","bolder");
+        $("#published").css("font-weight","normal");
+        $("#draft").css("font-weight","normal");
+        filterPost();
+    }
+    function filterPost()
+    {
+        $("#list-post").jtable('load', {
+            category: $("#category").val(),
+            published: publish
+        });
+    }
+</script>
+<?php } ?>
 </body>
 </html>

@@ -21,7 +21,7 @@
     <link href="<?php echo base_url('assets/css/style.css'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/style-responsive.css'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('fancybox/jquery.fancybox-1.3.4.css'); ?>" rel="stylesheet" media="screen">
-    <link href="<?php echo base_url('jquery-ui/jquery-ui.min.css'); ?>" rel="stylesheet">
+    <link href="<?php echo base_url('jquery-ui/jquery-ui.css'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('datetimepicker/jquery.timepicker.css'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('datetimepicker/lib/bootstrap-datepicker.css'); ?>" rel="stylesheet">
 
@@ -491,6 +491,87 @@ MAIN CONTENT
             published: publish
         });
     }
+</script>
+<?php } ?>
+<?php if ($content == "setting"){ ?>
+<script>
+    $(document).ready(function () {
+        $("#list-category").jtable({
+            title: "List of Category",
+            actions: {
+                listAction: "<?php echo base_url('ajax/list_category'); ?>",
+                deleteAction: "<?php echo base_url('ajax/delete_category'); ?>",
+                updateAction: '<?php echo base_url('ajax/edit_category'); ?>',
+                createAction: '<?php echo base_url('ajax/new_category'); ?>'
+            },
+            fields: {
+                id: {
+                    key: true,
+                    title: "ID",
+                    width: "1%"
+                },
+                name: {
+                    title: "Name"
+                }
+            }
+        });
+        $("#list-category").jtable('load');
+        var class_error = "has-error has-feedback";
+        $("#change_form").submit(function(){
+            $("#new_wrong").css("display","none");
+            $("#group-new-pass").removeClass(class_error);
+            $("#pass1_wrong").css("display","none");
+            $("#group-pass1").removeClass(class_error);
+            $("#pass_wrong").css("display","none");
+            $("#group-old-pass").removeClass(class_error);
+            $.ajax({
+                type	: "POST",
+                url 	: "<?php echo base_url('ajax/cek_pass'); ?>",
+                data	: {
+                    username : "<?php echo $_SESSION['username_hmif']; ?>",
+                    password : $("#old_pass").val()
+                },
+                success	: function(html){
+                    if (html == 'true'){
+                        var pass = $("#password").val();
+                        var pass1 = $("#password1").val();
+                        if (pass == ""){
+                            $("#new_wrong").css("display","block");
+                            $("#group-new-pass").addClass(class_error);
+                            $("#password").focus();
+                        }else if (pass != pass1){
+                            $("#pass1_wrong").css("display","block");
+                            $("#group-pass1").addClass(class_error);
+                            $("#password1").focus();
+                        }else{
+                            var user = $("#username").val();
+                            $.ajax({
+                                type	: "POST",
+                                url 	: "<?php echo base_url('ajax/change_pass'); ?>",
+                                data	: {
+                                    username : user,
+                                    password : pass
+                                },
+                                success : function(html){
+                                    if (html == "true"){
+                                        $("#CallBack").html("<div class='alert alert-success'>Success! Please login again!</div>");
+                                        window.location = "<?php echo base_url('admin/logout'); ?>";
+                                    }else{
+                                        $("#CallBack").html("<div class='alert alert-danger'>Gagal!</div>");
+                                    }
+                                }
+                            });
+                        }
+                    }else{
+                        $("#pass_wrong").css("display","block");
+                        $("#group-old-pass").addClass(class_error);
+                        $("#old_pass").focus();
+                    }
+                }
+            });
+            return false;
+        });
+    });
 </script>
 <?php } ?>
 </body>

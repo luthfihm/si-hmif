@@ -164,4 +164,92 @@ class Ajax extends CI_Controller
         }
         echo json_encode($jTableResult);
     }
+
+    function list_category()
+    {
+        $categories = $this->category->getAll();
+        $rows = array();
+        foreach ($categories as $category)
+        {
+            $row = array();
+            $row["id"] = $category->id;
+            $row["name"] = $category->name;
+            $rows[] = $row;
+        }
+        $jTableResult = array();
+        $jTableResult['Result'] = "OK";
+        $jTableResult['Records'] = $rows;
+        echo json_encode($jTableResult);
+    }
+
+    function delete_category()
+    {
+        $id =  $this->input->post('id');
+        $jTableResult = array();
+        if ($this->category->del_cat($id))
+        {
+            $jTableResult['Result'] = "OK";
+        }
+        else
+        {
+            $jTableResult['Result'] = "ERROR";
+            $jTableResult['Message'] = "Gagal menghapus!";
+        }
+        echo json_encode($jTableResult);
+    }
+
+    function edit_category()
+    {
+        $id =  $this->input->post('id');
+        $name =  $this->input->post('name');
+        $jTableResult = array();
+        if ($this->category->update_category($id,$name))
+        {
+            $jTableResult['Result'] = "OK";
+        }
+        else
+        {
+            $jTableResult['Result'] = "ERROR";
+            $jTableResult['Message'] = "Gagal update!";
+        }
+        echo json_encode($jTableResult);
+    }
+
+    function new_category()
+    {
+        $name = $this->input->post('name');
+        $jTableResult = array();
+        if ($this->category->new_cat($name))
+        {
+            $jTableResult['Result'] = "OK";
+        }
+        else
+        {
+            $jTableResult['Result'] = "ERROR";
+            $jTableResult['Message'] = "Gagal!";
+        }
+        echo json_encode($jTableResult);
+    }
+
+    function change_pass()
+    {
+        $user = $this->input->post('username');
+        $pass = $this->input->post('password');
+        $query = $this->user_model->change_pass($user,$pass);
+        if ($query){
+            echo "true";
+        }else{
+            echo "false";
+        }
+    }
+    function cek_pass(){
+        $user = $this->input->post('username');
+        $pass = $this->input->post('password');
+        $query = $this->user_model->validate($user,$pass);
+        if($query){
+            echo "true";
+        }else{
+            echo "false";
+        }
+    }
 }

@@ -82,4 +82,15 @@ class Admin extends CI_Controller {
             redirect('admin/login');
         }
     }
+    function setting()
+    {
+        if ($this->user_model->is_logged_in()){
+            $data['categories'] = $this->category->getAll();
+            $data['title'] = "Setting";
+            $data['content'] = "setting";;
+            $this->load->view("page",$data);
+        }else{
+            redirect('admin/login');
+        }
+    }
 }

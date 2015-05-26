@@ -18,4 +18,24 @@ class Category extends CI_Model {
         $query = $this->db->get("category");
         return $query->result();
     }
+
+    function del_cat($id)
+    {
+        $this->db->where("id",$id);
+        $query = $this->db->delete("category");
+        return $query;
+    }
+
+    function update_category($id,$name)
+    {
+        $this->db->where("id",$id);
+        $query = $this->db->update("category",array("name"=>$name));
+        return $query;
+    }
+
+    function new_cat($name)
+    {
+        $query = $this->db->insert("category",array("name"=>$name));
+        return $query;
+    }
 }
